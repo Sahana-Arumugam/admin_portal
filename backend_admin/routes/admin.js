@@ -3,6 +3,7 @@ import Registration from "../models/Registration.js";
 
 const router = express.Router();
 
+// GET all registrations (Admin)
 router.get("/registrations", async (req, res) => {
   try {
     const registrations = await Registration.find().sort({ created_at: -1 });

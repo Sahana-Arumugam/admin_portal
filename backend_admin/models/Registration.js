@@ -6,7 +6,7 @@ const registrationSchema = new mongoose.Schema(
     email: String,
     registration_type: String,
     company: String,
-    phone: String,
+    phone: String
   },
   { timestamps: { createdAt: "created_at" } }
 );

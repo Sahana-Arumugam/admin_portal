@@ -1,35 +1,41 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
-const registrationRoutes = require("./routes/registrationRoutes");
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import registrationRoutes from "./routes/registrationRoutes.js";
+
+dotenv.config();
 
 const app = express();
 
-/**
- * ✅ CORS CONFIG
- * - Allows frontend to be deployed later
- * - Works for local + deployed frontend
- * - Can be restricted after deployment
- */
+// Middleware
 app.use(cors({
-  origin: true, // 👈 IMPORTANT (handles deploy order problem)
+  origin: true,
   methods: ["GET", "POST"],
   credentials: true
 }));
 
-// Parse JSON request body
 app.use(express.json());
 
-// Connect MongoDB
-connectDB();
+// 🔥 MongoDB Connection (NO db.js)
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection failed:", err.message);
+    process.exit(1);
+  });
 
-// API Routes
+// Health check route (IMPORTANT for Render)
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running");
+});
+
+// API routes
 app.use("/api", registrationRoutes);
 
-// Dynamic port for cloud deployment
+// Dynamic port
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
